@@ -8,8 +8,8 @@ The idea to transform pictures into sounds comes from [this great video](https:/
 
 This project is at stage of development for now. 
 Idealy, this little software would:
- - Convert square pictures ($2^nx2^n$ sized) into a sound texture
- - Convert sound into pictures (with $44,100Hz$ sampling rate, we can create a $4096x4096$ picture out of a 6:30 music)
+ - Convert square pictures (2^n x 2^n sized) into a sound texture
+ - Convert sound into pictures (with 44,100Hz sampling rate, we can create a 4096x4096 picture out of a 6:30 music)
  - Convert video into music (each frame would be transformed into sound)
  - Convert music into video (get the music spectrum every 60ms would give us a ~16 fps video)
 
