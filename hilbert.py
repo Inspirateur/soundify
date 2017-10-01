@@ -24,7 +24,6 @@ def right(point):
     point.x += 1
 
 
-
 def hilbert(n, point=Point(), up=up, down=down, left=left, right=right):
     """
     recursive hilbert enumeration
