@@ -17,7 +17,7 @@ def main():
     time = np.linspace(0., nbsamples / frate, nbsamples)
     sound = np.sin(220. * 2.*np.pi * time) + 0.5*np.sin(440. * 2.0*np.pi * time)
 
-    spectrum = fft.rfft(sound)
+    spectrum = np.abs(fft.rfft(sound))
     freq = fft.rfftfreq(len(sound), 1 / frate)
 
     plt.figure(0)
