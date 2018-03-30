@@ -8,10 +8,13 @@ import numpy as np
 #pylint:disable=invalid-name
 def colorWheel(colors):
     """
-    return the angle associated with a particular angle
+    return the angle associated with a particular color
     """
-
     return 0
+
+def hls2rgb(hls):
+    rgb = hls
+    return rgb
 
 def color2complex(colors):
     """
@@ -22,16 +25,19 @@ def color2complex(colors):
     angles = colorWheel(colors)
     return modules * np.exp(1j*angles)
 
-def complex2color(number):
+def complex2color(numbers):
     """
     take a complex number with module between 0 and 1 and return the color
     associated to it
     """
-    assert(np.abs(number) <= 1)
-    module, angle = np.abs(number), np.angle(number)
-    H = (1 - module)
-    L = None
-    S = None
+    #  we don't want any amplitude greater to 1
+    assert (np.abs(numbers) <= 1).all()
+    modules, angles = np.abs(numbers), np.angle(numbers)
+    # generating hls values for each complex numbers
+    hls = np.array(angles*180/np.pi + 180,
+                   (1 - modules),
+                   np.ones(np.shape(numbers))).T
+    colors = hls2rgb(hls)
     return None
 
 def main():
