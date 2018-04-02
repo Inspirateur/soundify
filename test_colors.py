@@ -19,7 +19,7 @@ def main():
 
     numbers = color2number(colors)
     plt.figure(1)
-    plt.plot(np.real(numbers), np.imag(numbers))
+    plt.plot(np.real(numbers), np.imag(numbers), 'r+')
     plt.show()
 
 if __name__ == "__main__":
