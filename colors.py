@@ -10,7 +10,7 @@ def colorWheel(colors):
     """
     return the angle associated with a particular color
     """
-    return 2*colors
+    return 2 * np.pi / 3 * np.sum(colors, axis=1) % (2 * np.pi)
 
 def hls2rgb(hls):
     """
@@ -46,18 +46,3 @@ def number2color(numbers):
                    np.ones(np.shape(numbers))).T
     colors = hls2rgb(hls)
     return colors
-
-def main():
-    """
-    main function here
-    """
-    length = 10
-    colors = np.array([1/length * np.array((i, j, k))
-                       for i in range(length + 1)
-                       for j in range(length + 1)
-                       for k in range(length + 1)])
-    numbers = color2number(colors)
-    print(numbers)
-
-if __name__ == "__main__":
-    main()
