@@ -8,11 +8,28 @@ import numpy as np
 #pylint:disable=invalid-name
 def rgb2hsl(rgb):
     """
-    convert array of rgb values into array of hsl values
+    convert array of rgb values into array of hsl
     """
     mins, maxes = np.min(rgb, axis=1), np.max(rgb, axis=1)
+    red, green, blue = rgb.T
 
-    hsl = rgb
+    diff = maxes - mins
+    add = maxes + mins
+    light = add / 2
+
+    lightmask = light <= 0.5
+
+    zero = diff == np.zeros(diff)
+
+    sat = ~zero * (lightmask * diff / add
+                   + ~lightmask * diff / (2. - add))
+
+    masks = [color == maxes for color in rgb.T]
+    hue = ~zero * (masks[0] * (green - blue) / diff
+                   + masks[1] * (2. + (blue - red) / diff)
+                   + masks[2] * (4. + (red - green) / diff))
+
+    hsl = np.array([hue, sat, light]).T
     return hsl
 
 
@@ -28,17 +45,13 @@ def hsl2rgb(hsl):
     X = chroma * (1. - np.abs(hprime % 2. - 1.))
 
     # creating masks for computing rgb
-    masks = np.array([None for _ in range(6)])
-    for i in range(6):
-        masks[i] = (i <= hprime) & (hprime < i + 1)
+    masks = [(i <= hprime) & (hprime < i + 1) for i in range(6)]
 
     # calculating each component reffering to wikipedia tables
-    R1 = np.array(C * (masks[0] | masks[5])
-                  + X * (masks[1] | masks[4]))
-    G1 = np.array(C * (masks[1] | masks[2])
-                  + X * (masks[0] | masks[3]))
-    B1 = np.array(C * (masks[3] | masks[4])
-                  + X * (masks[2] | masks[5]))
+    R1 = (masks[0] | masks[5]) * chroma + (masks[1] | masks[4]) * X
+    G1 = (masks[1] | masks[2]) * chroma + (masks[0] | masks[3]) * X
+    B1 = (masks[3] | masks[4]) * chroma + (masks[2] | masks[5]) * X
+
     m = light - 1./2. * chroma
 
     rgb = np.array((R1 + m, G1 + m, B1 + m)).T
@@ -53,10 +66,8 @@ def color2number(colors):
     # colors are floats in [0, 1]
     assert ((0 <= colors) & (colors <= 1)).all()
     # grey scale
-    hsl = rgb2hsl(colors)
-    modules = 1/3 * np.sum(colors, axis=1)
-    angles = colorWheel(colors)
-    return modules * np.exp(1j*angles)
+    hue, sat, light = rgb2hsl(colors).T
+    return light * sat * np.exp(1j * hue * np.pi / 180.)
 
 
 def number2color(numbers):

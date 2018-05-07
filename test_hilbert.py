@@ -9,9 +9,7 @@ import turtle as ttl
 #pylint:disable-all
 
 def height(n):
-    if n == 1:
-        return 1
-    return 2*height(n-1) + 1
+    return 2 ** n - 1
 
 def main():
     """
