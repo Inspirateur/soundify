@@ -60,6 +60,7 @@ def hsl2rgb(hsl):
     m = light - 1./2. * chroma
 
     rgb = np.array((R1 + m, G1 + m, B1 + m)).T
+    rgb = np.where(rgb <= 0., 0, rgb)
     return rgb
 
 

@@ -5,7 +5,8 @@ Test for color modules
 
 import numpy as np
 import matplotlib.pyplot as plt
-from colors import color2number, number2color
+from colors import number2color
+from color_to_number import color2number
 
 def main():
     """
@@ -20,9 +21,9 @@ def main():
     numbers = color2number(colors)
     plt.figure()
     plt.plot(np.real(numbers), np.imag(numbers), 'r+')
-    #colors = number2color(numbers)
-    #plt.figure()
-    #plt.plot()
+    colors = number2color(numbers)
+    print(colors)
+
     plt.show()
 
 

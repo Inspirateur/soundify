@@ -21,15 +21,21 @@ def rgb2hsl(rgb):
     for i in range(1, 4):
         masks[i] = (rgb.T[i-1] == maxes)
 
-    hue = np.array(
-        masks[0] * 60. * (
+    hue = np.where(
+        masks[0],
+        60. * (
             masks[1] * (((green - blue) / delta) % 6.)
             + masks[2] * ((blue - red) / delta + 2.)
             + masks[3] * ((red - green)/ delta + 4.)
-        )
+        ),
+        0
     )
 
-    sat = masks[0] * delta / (1. - np.abs(2. * light - 1.))
+    sat = np.where(
+        masks[0],
+        delta / (1. - np.abs(2. * light - 1.)),
+        0
+    )
     return np.array((hue, sat, light)).T
 
 def color2number(colors):
