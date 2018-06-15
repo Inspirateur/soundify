@@ -8,30 +8,33 @@ import numpy as np
 #pylint:disable=invalid-name
 def rgb2hsl(rgb):
     """
-    convert array of rgb values into array of hsl values
+    convert array of rgb values into array of hsl
     """
     # getting components independentely
     red, green, blue = rgb.T
     # basic algorithm to calculate hsl values from rgb numpy compatible
     mins, maxes = np.min(rgb, axis=1), np.max(rgb, axis=1)
-    light = (mins + maxes) / 2.
-    delta = maxes - mins
 
-    masks = np.array([None for _ in range(4)])
-    masks[0] = (delta != 0.)
-    for i in range(1, 4):
-        masks[i] = (rgb.T[i-1] == maxes)
+    diff = maxes - mins
+    add = maxes + mins
+    light = add / 2
 
-    hue = np.array(
-        masks[0] * 60. * (
-            masks[1] * (((green - blue) / delta) % 6.)
-            + masks[2] * ((blue - red) / delta + 2.)
-            + masks[3] * ((red - green)/ delta + 4.)
-        )
-    )
+    lightmask = light <= 0.5
 
-    sat = masks[0] * delta / (1. - np.abs(2. * light - 1.))
-    return np.array((hue, sat, light)).T
+    zero = diff == 0.
+
+    sat = np.where(zero,
+                   0.,
+                   np.where(lightmask, diff / add, diff / (2. - add)))
+
+    masks = [color == maxes for color in rgb.T]
+    hue = 60. * np.where(zero, 0,
+                         np.where(masks[0], (green - blue) / diff,
+                                  np.where(masks[1], (2. + (blue - red) / diff),
+                                           (4. + (red - green) / diff))))
+
+    hsl = np.array([hue, sat, light]).T
+    return hsl
 
 
 def hsl2rgb(hsl):
@@ -46,21 +49,17 @@ def hsl2rgb(hsl):
     X = chroma * (1. - np.abs(hprime % 2. - 1.))
 
     # creating masks for computing rgb
-    masks = np.array([None for _ in range(6)])
-    for i in range(6):
-        masks[i] = (i <= hprime) & (hprime < i + 1)
+    masks = [(i <= hprime) & (hprime < i + 1) for i in range(6)]
 
     # calculating each component reffering to wikipedia tables
-    R1 = np.array((masks[0] | masks[5]) * chroma
-                  + (masks[1] | masks[4]) * X)
-    G1 = np.array((masks[1] | masks[2]) * chroma
-                  + (masks[0] | masks[3]) * X)
-    B1 = np.array((masks[3] | masks[4]) * chroma
-                  + (masks[2] | masks[5]) * X)
+    R1 = (masks[0] | masks[5]) * chroma + (masks[1] | masks[4]) * X
+    G1 = (masks[1] | masks[2]) * chroma + (masks[0] | masks[3]) * X
+    B1 = (masks[3] | masks[4]) * chroma + (masks[2] | masks[5]) * X
+
     m = light - 1./2. * chroma
 
     rgb = np.array((R1 + m, G1 + m, B1 + m)).T
-    rgb = np.where(rgb <= 0., 0, rgb)
+    rgb = np.where(rgb <= 0., 0., rgb)
     return rgb
 
 
@@ -73,7 +72,7 @@ def color2number(colors):
     assert ((colors >= 0.) & (colors <= 1.)).all()
     # grey scale
     hue, sat, light = rgb2hsl(colors).T
-    return light * np.exp(1j*(hue * np.pi / 180.))
+    return light * sat * np.exp(1j * hue * np.pi / 180.)
 
 
 def number2color(numbers):

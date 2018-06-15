@@ -5,14 +5,14 @@ Test for color modules
 
 import numpy as np
 import matplotlib.pyplot as plt
-from colors import number2color
-from color_to_number import color2number
+
+from colors import number2color, color2number
 
 def main():
     """
     main function here
     """
-    length = 10
+    length = 15
     colors = np.array([1/length * np.array((i, j, k))
                        for i in range(length + 1)
                        for j in range(length + 1)
