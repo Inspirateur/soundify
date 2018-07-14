@@ -68,11 +68,12 @@ def color2number(colors):
     take a color (triplet of float in [0, 1]), and return the complex
     number in the unit disk associated to it
     """
+    #pylint:disable=unused-variable
     # colors are floats in [0, 1]
     assert ((colors >= 0.) & (colors <= 1.)).all()
     # grey scale
     hue, sat, light = rgb2hsl(colors).T
-    return light * sat * np.exp(1j * hue * np.pi / 180.)
+    return light * np.exp(1j * hue * np.pi / 180.)
 
 
 def number2color(numbers):
