@@ -10,8 +10,10 @@ def rgb2hsl(rgb):
     """
     convert array of rgb values into array of hsl
     """
-    mins, maxes = np.min(rgb, axis=1), np.max(rgb, axis=1)
+    # getting components independentely
     red, green, blue = rgb.T
+    # basic algorithm to calculate hsl values from rgb numpy compatible
+    mins, maxes = np.min(rgb, axis=1), np.max(rgb, axis=1)
 
     diff = maxes - mins
     add = maxes + mins
@@ -19,15 +21,17 @@ def rgb2hsl(rgb):
 
     lightmask = light <= 0.5
 
-    zero = diff == np.zeros(diff)
+    zero = diff == 0.
 
-    sat = ~zero * (lightmask * diff / add
-                   + ~lightmask * diff / (2. - add))
+    sat = np.where(zero,
+                   0.,
+                   np.where(lightmask, diff / add, diff / (2. - add)))
 
     masks = [color == maxes for color in rgb.T]
-    hue = ~zero * (masks[0] * (green - blue) / diff
-                   + masks[1] * (2. + (blue - red) / diff)
-                   + masks[2] * (4. + (red - green) / diff))
+    hue = 60. * np.where(zero, 0,
+                         np.where(masks[0], (green - blue) / diff,
+                                  np.where(masks[1], (2. + (blue - red) / diff),
+                                           (4. + (red - green) / diff))))
 
     hsl = np.array([hue, sat, light]).T
     return hsl
@@ -55,19 +59,21 @@ def hsl2rgb(hsl):
     m = light - 1./2. * chroma
 
     rgb = np.array((R1 + m, G1 + m, B1 + m)).T
+    rgb = np.where(rgb <= 0., 0., rgb)
     return rgb
 
 
 def color2number(colors):
     """
-    take a color (triplet of float between 0 and 1), and return the complex
+    take a color (triplet of float in [0, 1]), and return the complex
     number in the unit disk associated to it
     """
+    #pylint:disable=unused-variable
     # colors are floats in [0, 1]
-    assert ((0 <= colors) & (colors <= 1)).all()
+    assert ((colors >= 0.) & (colors <= 1.)).all()
     # grey scale
     hue, sat, light = rgb2hsl(colors).T
-    return light * sat * np.exp(1j * hue * np.pi / 180.)
+    return light * np.exp(1j * hue * np.pi / 180.)
 
 
 def number2color(numbers):
@@ -76,7 +82,7 @@ def number2color(numbers):
     associated to it
     """
     #  we don't want any amplitude greater to 1
-    assert (np.abs(numbers) <= 1).all()
+    assert (np.abs(numbers) <= 1.).all()
 
     # generating hsl values for each complex numbers
     hsl = np.array((
@@ -84,5 +90,4 @@ def number2color(numbers):
         np.ones(np.shape(numbers)),                 # saturation (always 1)
         np.abs(numbers),                            # lightness
     )).T
-    colors = hsl2rgb(hsl)
-    return colors
+    return hsl2rgb(hsl)
