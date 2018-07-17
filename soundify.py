@@ -7,8 +7,7 @@ import numpy as np
 from numpy.fft import rfft, rfftfreq, irfft
 import matplotlib.pyplot as plt
 from hilbert import hilbert
-from colors import color2number, number2color
-
+from colors import color_to_number, number_to_color
 
 def dispay_sound(sound):
     """
@@ -23,24 +22,24 @@ def dispay_sound(sound):
     plt.plot(time, sound)
 
 
-def image2music(image):
+def image_to_music(image):
     """
     convert an image (numpy array of pixel (rgb(a?))) into a numpy array
     """
     # converting image into frequency spectrum
-    spectrum = color2number(image)
+    spectrum = color_to_number(image)
     sound = irfft(spectrum)
     # used for debugging
     dispay_sound(sound)
     return sound
 
 
-def music2image(music):
+def music_to_image(music):
     """
     convert an music (array of amplitude) into a numpy array of color
     """
     spectrum = rfft(music)
-    image = number2color(spectrum)
+    image = number_to_color(spectrum / np.max(spectrum))
     return image
 
 

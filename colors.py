@@ -6,7 +6,7 @@ Test on color picking with angle and amplitude of a complex number
 import numpy as np
 
 #pylint:disable=invalid-name
-def rgb2hsl(rgb):
+def rgb_to_hsl(rgb):
     """
     convert array of rgb values into array of hsl
     """
@@ -33,11 +33,10 @@ def rgb2hsl(rgb):
                                   np.where(masks[1], (2. + (blue - red) / diff),
                                            (4. + (red - green) / diff))))
 
-    hsl = np.array([hue, sat, light]).T
-    return hsl
+    return np.array([hue, sat, light]).T
 
 
-def hsl2rgb(hsl):
+def hsl_to_rgb(hsl):
     """
     convert array of hsl values into array of rgb values
     """
@@ -63,7 +62,7 @@ def hsl2rgb(hsl):
     return rgb
 
 
-def color2number(colors):
+def color_to_number(colors):
     """
     take a color (triplet of float in [0, 1]), and return the complex
     number in the unit disk associated to it
@@ -72,11 +71,11 @@ def color2number(colors):
     # colors are floats in [0, 1]
     assert ((colors >= 0.) & (colors <= 1.)).all()
     # grey scale
-    hue, sat, light = rgb2hsl(colors).T
+    hue, sat, light = rgb_to_hsl(colors).T
     return light * np.exp(1j * hue * np.pi / 180.)
 
 
-def number2color(numbers):
+def number_to_color(numbers):
     """
     take a complex vector with module between 0 and 1 and return the color
     associated to it
@@ -90,4 +89,4 @@ def number2color(numbers):
         np.ones(np.shape(numbers)),                 # saturation (always 1)
         np.abs(numbers),                            # lightness
     )).T
-    return hsl2rgb(hsl)
+    return hsl_to_rgb(hsl)
