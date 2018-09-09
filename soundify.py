@@ -9,28 +9,14 @@ import matplotlib.pyplot as plt
 from hilbert import hilbert
 from colors import color_to_number, number_to_color
 
-def dispay_sound(sound):
-    """
-    display the sound
-    """
-    nbsamples = len(sound)
-    # sampling frequency
-    frate = 44100.
-    # time and frequency array
-    time = np.linspace(0., nbsamples / frate, nbsamples)
-    freq = rfftfreq(nbsamples, 1 / frate)
-    plt.plot(time, sound)
-
 
 def image_to_music(image):
     """
-    convert an image (numpy array of pixel (rgb(a?))) into a numpy array
+    convert an image (numpy array of pixel (rgb(a?))) into a numpy array representing sound
     """
     # converting image into frequency spectrum
     spectrum = color_to_number(image)
-    sound = irfft(spectrum)
-    # used for debugging
-    dispay_sound(sound)
+    sound = irfft(len(spectrum) / 2 * spectrum)
     return sound
 
 
@@ -38,8 +24,7 @@ def music_to_image(music):
     """
     convert an music (array of amplitude) into a numpy array of color
     """
-    spectrum = rfft(music)
-    image = number_to_color(spectrum / np.max(spectrum))
+    image = number_to_color(2 / len(music) * rfft(music))
     return image
 
 

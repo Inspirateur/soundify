@@ -7,6 +7,19 @@ import numpy as np
 from numpy import fft
 import matplotlib.pyplot as plt
 
+def dispay_sound(sound):
+    """
+    display the sound
+    """
+    nbsamples = len(sound)
+    # sampling frequency
+    frate = 44100.
+    # time and frequency array
+    time = np.linspace(0., nbsamples / frate, nbsamples)
+    # freq = rfftfreq(nbsamples, 1 / frate)
+    plt.plot(time, sound)
+    plt.show()
+
 
 def main():
     """
@@ -15,7 +28,7 @@ def main():
     nbsamples = 10000
     frate = 44100.
     time = np.linspace(0., nbsamples / frate, nbsamples)
-    sound = np.sin(220. * 2.*np.pi * time) + 0.5*np.sin(440. * 2.0*np.pi * time)
+    sound = 0.5 * np.sin(220. * 2.*np.pi * time) + 0.5*np.sin(440. * 2.0*np.pi * time)
 
     spectrum = fft.rfft(sound)
     freq = fft.rfftfreq(len(sound), 1 / frate)
@@ -24,9 +37,6 @@ def main():
     plt.plot(time, sound)
     plt.figure(1)
     plt.semilogx(freq, 2 / nbsamples * np.abs(spectrum))
-
-    plt.figure(2)
-    plt.semilogx(freq, 2 / nbsamples * np.angle(spectrum))
 
     sound = fft.irfft(spectrum)
 

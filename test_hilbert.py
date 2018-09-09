@@ -25,7 +25,7 @@ def main():
     draw.goto(ox, oy)
     draw.down()
     coeff = 600 / height(n)
-    for x, y in hilbert(n):
+    for x, y in hilbert(2 ** n):
         draw.goto(ox + coeff*x, oy + coeff*y)
     ttl.mainloop()
 
