@@ -6,17 +6,35 @@ internal image class
 import numpy as np
 
 class Image:
-    def __init__(self, image, sweeping_func):
+    """
+    internal image class for soundify
+    """
+    def __init__(self, image, sweeping_func=None):
+
         self.size = image.size
         self.mode = image.mode
         self.format = image.format
+        self.data = None
+
+        self._raw = np.array(image.getdata())
         self.sweep = sweeping_func
-        self.data = Image._generate_data(image, sweeping_func)
+
+        del image
+
+    @property
+    def sweep(self):
+        return self._sweep
+    
+    @sweep.setter
+    def sweep(self, value):
+        if self._sweep is not None:
+            raise ValueError("Sweeping function mus only be set once")
+        else:
+            self._sweep = value
+            self._generate_data()
 
 
-    @staticmethod
-    def _generate_data(image, sweeping_func):
-        data = np.zeros((np.prod(image.size), 3))
-        for i, point in enumerate(sweeping_func(image.size)):
-            data[i] = image.getpixel(point)
-        return data
+    def _generate_data(self):
+        if self.data is not None:
+            return
+        self.data = np.array(self._raw[point] for point in self.sweep(self.size))
