@@ -24,7 +24,7 @@ def read_music(filename : str, blocksize):
     return music
 
 def read_image(filename : str, sweeping_func):
-    image = pil.open(filename)
+    image = pil.open(filename).convert('RGB')
     return Image(image, sweeping_func)
 
 

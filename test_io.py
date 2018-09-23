@@ -15,10 +15,9 @@ def test_sound():
 
 def test_image():
     # testing homogeneity
-    image = io.read_image("chess_board.png", hilbert)
+    image = io.read_image("dominoes_tiling.png", hilbert)
     print(image.format, image.size, image.mode)
-    io.write_image("export.png", image)
-
+    io.write_image("export_color.png", image)
 
 
 def main():

@@ -26,7 +26,7 @@ def right(point):
     point.x += 1
 
 
-def _hilbert(n, point=Point(), up=up, down=down, left=left, right=right):
+def _hilbert(n, point, up=up, down=down, left=left, right=right):
     """
     recursive hilbert enumeration
     """
@@ -50,4 +50,5 @@ def hilbert(size):
     assert w == h
     assert not (w & (w - 1))
     n = int(np.log2(w))
-    yield from _hilbert(n)
+    point = Point()
+    yield from _hilbert(n, point)
