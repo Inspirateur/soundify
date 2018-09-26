@@ -7,10 +7,17 @@ from PIL import Image as pil
 import numpy as np
 
 class Image:
+    """
+    internal image class for soundify
+    """
     def __init__(self, image, sweeping_func=None):
+
         self.size = image.size
         self.mode = image.mode
         self.format = image.format
+        self.data = None
+
+        self._raw = np.array(image.getdata())
         self.sweep = sweeping_func
         self._raw = np.reshape(np.array(image.getdata(), dtype=np.uint8), (self.size + (-1,)))
         print(self._raw)
